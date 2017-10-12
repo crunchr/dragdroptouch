@@ -18,7 +18,7 @@ var scrollKillClass = "kill-scrolling";
 var lockBodyScroll = function lockBodyScroll(body) { body.classList.add(scrollKillClass) };
 var unlockBodyScroll = function unlockBodyScroll(body) { body.classList.remove(scrollKillClass) };
 // Ms before a touch event is registered as such
-var touchRegisterWait = 10;
+var touchRegisterWait = 5;
 
 var DragDropTouch;
 (function (DragDropTouch_1) {
@@ -168,7 +168,7 @@ var DragDropTouch;
                     return true;
                 }
             });
-            // listen to touch events
+            // Add eventlisteners i.e. start listening to touch events
             if ('ontouchstart' in document) {
                 var d = document, ts = this._touchstart.bind(this), tm = this._touchmove.bind(this), te = this._touchend.bind(this), opt = supportsPassive ? { passive: false, capture: false } : false;
                 d.addEventListener('touchstart', ts, opt);
@@ -212,14 +212,6 @@ var DragDropTouch;
                         this._ptDown = this._getPoint(e);
                         this._lastTouch = e;
                         e.preventDefault();
-                        // show context menu if the user hasn't started dragging after a while
-                        setTimeout(function () {
-                            if (_this._dragSource == src && _this._img == null) {
-                                if (_this._dispatchEvent(e, 'contextmenu', src)) {
-                                    _this._reset();
-                                }
-                            }
-                        }, DragDropTouch._CTXMENU);
                     }
                 }
             }
@@ -423,10 +415,9 @@ var DragDropTouch;
     }());
     /*private*/ DragDropTouch._instance = new DragDropTouch(); // singleton
     // constants
-    DragDropTouch._THRESHOLD = 5; // pixels to move before drag starts
+    DragDropTouch._THRESHOLD = 3; // pixels to move before drag starts
     DragDropTouch._OPACITY = 0.5; // drag image opacity
-    DragDropTouch._DBLCLICK = 500; // max ms between clicks in a double click
-    DragDropTouch._CTXMENU = 900; // ms to hold before raising 'contextmenu' event
+    DragDropTouch._DBLCLICK = 350; // max ms between clicks in a double click
     // copy styles/attributes from drag source to drag image element
     DragDropTouch._rmvAtts = 'id,class,style,draggable'.split(',');
     // synthesize and dispatch an event
