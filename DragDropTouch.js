@@ -13,9 +13,14 @@ function debounce(func, wait, immediate) {
     };
 };
 
-var DragDropTouch;
-var touchRegisterWait = 10; // ms before a touch event is registered as such
+// Prevent scrolling during touchMove.
+var scrollKillClass = "kill-scrolling";
+var lockBodyScroll = function lockBodyScroll(body) { body.classList.add(scrollKillClass) };
+var unlockBodyScroll = function unlockBodyScroll(body) { body.classList.remove(scrollKillClass) };
+// Ms before a touch event is registered as such
+var touchRegisterWait = 10;
 
+var DragDropTouch;
 (function (DragDropTouch_1) {
     'use strict';
     /**
@@ -180,6 +185,7 @@ var touchRegisterWait = 10; // ms before a touch event is registered as such
         };
         // ** event handlers
         DragDropTouch.prototype._touchstart = debounce(function (e) {
+            lockBodyScroll(document.body);
             var supportsPassive = false;
             var tm = this._touchmove.bind(this),opt = supportsPassive ? { passive: false, capture: false } : false;
             document.addEventListener('touchmove', tm, opt);
@@ -239,7 +245,9 @@ var touchRegisterWait = 10; // ms before a touch event is registered as such
                 // continue dragging
                 if (this._img) {
                     this._lastTouch = e;
-                    e.preventDefault(); // prevent scrolling
+
+                    // Prevent scrolling
+                    e.preventDefault();
                     if (target != this._lastTarget) {
                         this._dispatchEvent(this._lastTouch, 'dragleave', this._lastTarget);
                         this._dispatchEvent(e, 'dragenter', target);
@@ -273,6 +281,8 @@ var touchRegisterWait = 10; // ms before a touch event is registered as such
                     this._reset();
                 }
             }
+            // Enable scrolling again
+            unlockBodyScroll(document.body);
         };
         // ** utilities
         // ignore events that have been handled or that involve more than one touch
