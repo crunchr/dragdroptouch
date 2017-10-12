@@ -14,6 +14,8 @@ function debounce(func, wait, immediate) {
 };
 
 var DragDropTouch;
+var touchRegisterWait = 10; // ms before a touch event is registered as such
+
 (function (DragDropTouch_1) {
     'use strict';
     /**
@@ -215,7 +217,7 @@ var DragDropTouch;
                     }
                 }
             }
-        },500);
+        }, touchRegisterWait);
         DragDropTouch.prototype._touchmove = function (e) {
             if (this._shouldHandle(e)) {
                 // see if target wants to handle move
