@@ -1,24 +1,7 @@
-function debounce(func, wait, immediate) {
-    var timeout;
-    return function() {
-        var context = this, args = arguments;
-        var later = function() {
-            timeout = null;
-            if (!immediate) func.apply(context, args);
-        };
-        var callNow = immediate && !timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-        if (callNow) func.apply(context, args);
-    };
-};
-
 // Prevent scrolling during touchMove.
 var scrollKillClass = "kill-scrolling";
 var lockBodyScroll = function lockBodyScroll(body) { body.classList.add(scrollKillClass) };
 var unlockBodyScroll = function unlockBodyScroll(body) { body.classList.remove(scrollKillClass) };
-// Ms before a touch event is registered as such
-var touchRegisterWait = 5;
 
 var DragDropTouch;
 (function (DragDropTouch_1) {
@@ -184,8 +167,7 @@ var DragDropTouch;
             return DragDropTouch._instance;
         };
         // ** event handlers
-        DragDropTouch.prototype._touchstart = debounce(function (e) {
-            lockBodyScroll(document.body);
+        DragDropTouch.prototype._touchstart = function (e) {
             var supportsPassive = false;
             var tm = this._touchmove.bind(this),opt = supportsPassive ? { passive: false, capture: false } : false;
             document.addEventListener('touchmove', tm, opt);
@@ -215,20 +197,24 @@ var DragDropTouch;
                     }
                 }
             }
-        }, touchRegisterWait);
+        };
         DragDropTouch.prototype._touchmove = function (e) {
             if (this._shouldHandle(e)) {
                 // see if target wants to handle move
                 var target = this._getTarget(e);
                 if (this._dispatchEvent(e, 'mousemove', target)) {
-                    this._lastTouch = e;
                     e.preventDefault();
+                    this._lastTouch = e;
                     return;
                 }
                 // start dragging
                 if (this._dragSource && !this._img) {
                     var delta = this._getDelta(e);
                     if (delta > DragDropTouch._THRESHOLD) {
+                        // Prevent scrolling
+                        lockBodyScroll(document.body);
+                        e.preventDefault();
+
                         this._dispatchEvent(e, 'dragstart', this._dragSource);
                         this._createImage(e);
                         this._dispatchEvent(e, 'dragenter', target);
@@ -238,8 +224,6 @@ var DragDropTouch;
                 if (this._img) {
                     this._lastTouch = e;
 
-                    // Prevent scrolling
-                    e.preventDefault();
                     if (target != this._lastTarget) {
                         this._dispatchEvent(this._lastTouch, 'dragleave', this._lastTarget);
                         this._dispatchEvent(e, 'dragenter', target);
@@ -415,7 +399,7 @@ var DragDropTouch;
     }());
     /*private*/ DragDropTouch._instance = new DragDropTouch(); // singleton
     // constants
-    DragDropTouch._THRESHOLD = 3; // pixels to move before drag starts
+    DragDropTouch._THRESHOLD = 1; // pixels to move before drag starts
     DragDropTouch._OPACITY = 0.5; // drag image opacity
     DragDropTouch._DBLCLICK = 350; // max ms between clicks in a double click
     // copy styles/attributes from drag source to drag image element
@@ -426,4 +410,3 @@ var DragDropTouch;
     DragDropTouch._ptProps = 'pageX,pageY,clientX,clientY,screenX,screenY'.split(',');
     DragDropTouch_1.DragDropTouch = DragDropTouch;
 })(DragDropTouch || (DragDropTouch = {}));
-//# sourceMappingURL=DragDropTouchNoWijmo.js.map
