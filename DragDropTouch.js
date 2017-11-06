@@ -193,6 +193,11 @@ var DragDropTouch;
                         this._dragSource = src;
                         this._ptDown = this._getPoint(e);
                         this._lastTouch = e;
+
+                        // Add nowDragging class to element to indicate dragging is imminent
+                        if(!!this._dragSource) {
+                          this._dragSource.classList.add('nowDragging');
+                        }
                         e.preventDefault();
                     }
                 }
@@ -236,6 +241,11 @@ var DragDropTouch;
         };
         DragDropTouch.prototype._touchend = function (e) {
             if (this._shouldHandle(e)) {
+                // Remove nowDragging class as dragging has stopped
+                if(!!this._dragSource) {
+                  this._dragSource.classList.remove('nowDragging');
+                }
+
                 // see if target wants to handle up
                 if (this._dispatchEvent(this._lastTouch, 'mouseup', e.target)) {
                     e.preventDefault();
