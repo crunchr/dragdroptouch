@@ -312,7 +312,8 @@ var DragDropTouch;
             if (this._img) {
                 this._destroyImage();
             }
-            // create drag image from custom element or drag source
+            // Clone drag source and display this as the dragged element
+            // (thus an _extra_ element will be inserted in the DOM tree, at the end of body)
             var src = this._imgCustom || this._dragSource;
             this._img = src.cloneNode(true);
             this._copyStyle(src, this._img);
