@@ -193,16 +193,23 @@ var DragDropTouch;
                         this._dragSource = src;
                         this._ptDown = this._getPoint(e);
                         this._lastTouch = e;
-
-                        // Add nowDragging class to element to indicate dragging is imminent
-                        if(!!this._dragSource) {
-                          this._dragSource.classList.add('nowDragging');
+                    }
+                    // If current Crunchr app is survey, temporarily hide the hint-icon of
+                    // the dragged card to prevent it from being cloned (this is ugly/weird).
+                    if(DragDropTouch.prototype._getCurrentCrunchrApp() === 'survey') {
+                        this.hintElement = DragDropTouch.prototype._findHintElement(src);
+                        if(!!this.hintElement) {
+                            this.hintElement.style.display = 'none';
                         }
-                        e.preventDefault();
+                    }
+                    // Add nowDragging class to element to indicate dragging is imminent
+                    if(!!this._dragSource) {
+                      this._dragSource.classList.add('nowDragging');
+                    }
+                    e.preventDefault();
                     }
                 }
-            }
-        };
+            };
         DragDropTouch.prototype._touchmove = function (e) {
             if (this._shouldHandle(e)) {
                 // see if target wants to handle move
@@ -269,8 +276,57 @@ var DragDropTouch;
             }
             // Enable scrolling again
             unlockBodyScroll(document.body);
+
+            // Show the hint element again (if it was hidden)
+            if(!!this.hintElement) {
+              this.hintElement.style.display = ''; // default
+            }
         };
         // ** utilities
+        DragDropTouch.prototype._getCurrentCrunchrApp = () => {
+          const bodyClasses =  document.body.className.split(' ');
+          let currentApp = ''
+          bodyClasses.forEach((cls) => {
+            switch (cls) {
+              case 'organisation':
+                currentApp = 'organisation';
+              case 'workforce':
+                currentApp = 'workforce';
+              case "succession":
+                return "succession";
+              case 'talent':
+                currentApp = 'talent';
+              case 'preference':
+                currentApp = 'preference';
+              case 'next':
+                currentApp = 'next';
+              case 'survey':
+                currentApp = 'survey';
+            };
+          });
+          return currentApp;
+        };
+        DragDropTouch.prototype._findHintElement = (src) => {
+          // Find the node by classname. We traverse, since
+          // its location in the DOM might change in future releases,
+          // or hints might not be available at all.
+          const children = src.childNodes;
+          let hintElement = undefined;
+          // For each child of the dragged sourcenode
+          for(let i = 0; i < children.length; i++) {
+              const el = children[i];
+              // If a child has no classlist, skip it
+              if(!el.classList) {
+                  continue;
+              };
+              // If it contains the hint classname, it's the correct hintElement.
+              if(Array(el.classList[0]).indexOf("hint") != -1) {
+                    hintElement = children[i];
+                    break;
+                }
+            }
+          return hintElement;
+        };
         // ignore events that have been handled or that involve more than one touch
         DragDropTouch.prototype._shouldHandle = function (e) {
             return e &&
@@ -362,7 +418,7 @@ var DragDropTouch;
             DragDropTouch._rmvAtts.forEach(function (att) {
                 dst.removeAttribute(att);
             });
-            // copy canvas content
+            // copy canvas content, if it exists
             if (src instanceof HTMLCanvasElement) {
                 var cSrc = src, cDst = dst;
                 cDst.width = cSrc.width;
@@ -411,7 +467,7 @@ var DragDropTouch;
     /*private*/ DragDropTouch._instance = new DragDropTouch(); // singleton
     // constants
     DragDropTouch._THRESHOLD = 1; // pixels to move before drag starts
-    DragDropTouch._OPACITY = 0.5; // drag image opacity
+    DragDropTouch._OPACITY = 0.75; // drag image opacity
     DragDropTouch._DBLCLICK = 350; // max ms between clicks in a double click
     // copy styles/attributes from drag source to drag image element
     DragDropTouch._rmvAtts = 'id,class,style,draggable'.split(',');
