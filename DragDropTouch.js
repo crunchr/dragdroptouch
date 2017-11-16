@@ -227,6 +227,8 @@ var DragDropTouch;
                 }
                 // continue dragging
                 if (this._img) {
+                    // HACK: align ball with finger (find out why a transform is added...)
+                    this._img.style.transform = '';
                     this._lastTouch = e;
 
                     if (target != this._lastTarget) {
