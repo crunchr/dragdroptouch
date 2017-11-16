@@ -274,30 +274,30 @@ var DragDropTouch;
             }
         };
         // ** utilities
-        DragDropTouch.prototype._getCurrentCrunchrApp = () => {
-          const bodyClasses =  document.body.className.split(' ');
-          let currentApp = ''
-          bodyClasses.forEach((cls) => {
-            switch (cls) {
-              case 'organisation':
-                currentApp = 'organisation';
-              case 'workforce':
-                currentApp = 'workforce';
-              case "succession":
-                return "succession";
-              case 'talent':
-                currentApp = 'talent';
-              case 'preference':
-                currentApp = 'preference';
-              case 'next':
-                currentApp = 'next';
-              case 'survey':
-                currentApp = 'survey';
-            };
-          });
-          return currentApp;
+        DragDropTouch.prototype._getCurrentCrunchrApp = function () {
+            const bodyClasses = document.body.className.split(' ');
+            let currentApp = ''
+            bodyClasses.forEach(function (cls) {
+                switch (cls) {
+                    case 'organisation':
+                        currentApp = 'organisation';
+                    case 'workforce':
+                        currentApp = 'workforce';
+                    case "succession":
+                        currentApp "succession";
+                    case 'talent':
+                        currentApp = 'talent';
+                    case 'preference':
+                        currentApp = 'preference';
+                    case 'next':
+                        currentApp = 'next';
+                    case 'survey':
+                        currentApp = 'survey';
+                };
+            });
+            return currentApp;
         };
-        DragDropTouch.prototype._findHintElement = (src) => {
+        DragDropTouch.prototype._findHintElement = function (src) {
           // Find the node by classname. We traverse, since
           // its location in the DOM might change in future releases,
           // or hints might not be available at all.
