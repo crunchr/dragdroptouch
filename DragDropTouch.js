@@ -1,8 +1,3 @@
-// Prevent scrolling during touchMove.
-var scrollKillClass = "kill-scrolling";
-var lockBodyScroll = function lockBodyScroll(body) { body.classList.add(scrollKillClass) };
-var unlockBodyScroll = function unlockBodyScroll(body) { body.classList.remove(scrollKillClass) };
-
 var DragDropTouch;
 (function (DragDropTouch_1) {
     'use strict';
@@ -223,8 +218,6 @@ var DragDropTouch;
                 if (this._dragSource && !this._img) {
                     var delta = this._getDelta(e);
                     if (delta > DragDropTouch._THRESHOLD) {
-                        // Prevent scrolling
-                        lockBodyScroll(document.body);
                         e.preventDefault();
 
                         this._dispatchEvent(e, 'dragstart', this._dragSource);
@@ -274,8 +267,6 @@ var DragDropTouch;
                     this._reset();
                 }
             }
-            // Enable scrolling again
-            unlockBodyScroll(document.body);
 
             // Show the hint element again (if it was hidden)
             if(!!this.hintElement) {
