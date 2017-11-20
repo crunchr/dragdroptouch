@@ -286,7 +286,7 @@ var DragDropTouch;
                     case 'workforce':
                         currentApp = 'workforce';
                     case "succession":
-                        currentApp "succession";
+                        currentApp = "succession";
                     case 'talent':
                         currentApp = 'talent';
                     case 'preference':
@@ -365,7 +365,10 @@ var DragDropTouch;
             // (thus an _extra_ element will be inserted in the DOM tree, at the end of body)
             var src = this._imgCustom || this._dragSource;
             this._img = src.cloneNode(true);
-            this._copyStyle(src, this._img);
+            // Disable copying style in survey.
+            if (DragDropTouch.prototype._getCurrentCrunchrApp() != 'survey') {
+                this._copyStyle(src, this._img);
+            }
             this._img.style.top = this._img.style.left = '-9999px';
             // if creating from drag source, apply offset and opacity
             if (!this._imgCustom) {
@@ -463,7 +466,7 @@ var DragDropTouch;
     DragDropTouch._OPACITY = 0.75; // drag image opacity
     DragDropTouch._DBLCLICK = 350; // max ms between clicks in a double click
     // copy styles/attributes from drag source to drag image element
-    DragDropTouch._rmvAtts = 'id,class,style,draggable'.split(',');
+    DragDropTouch._rmvAtts = 'id,style,draggable'.split(',');
     // synthesize and dispatch an event
     // returns true if the event has been handled (e.preventDefault == true)
     DragDropTouch._kbdProps = 'altKey,ctrlKey,metaKey,shiftKey'.split(',');
