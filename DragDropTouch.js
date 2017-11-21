@@ -370,6 +370,9 @@ var DragDropTouch;
                 this._copyStyle(src, this._img);
             }
             this._img.style.top = this._img.style.left = '-9999px';
+            this._img.style.position = 'absolute';
+            this._img.style.pointerEvents = 'none';
+            this._img.style.zIndex = '999999';
             // if creating from drag source, apply offset and opacity
             if (!this._imgCustom) {
                 var rc = src.getBoundingClientRect(), pt = this._getPoint(e);
@@ -394,9 +397,6 @@ var DragDropTouch;
             requestAnimationFrame(function () {
                 if (_this._img) {
                     var pt = _this._getPoint(e, true), s = _this._img.style;
-                    s.position = 'absolute';
-                    s.pointerEvents = 'none';
-                    s.zIndex = '999999';
                     s.left = Math.round(pt.x - _this._imgOffset.x) + 'px';
                     s.top = Math.round(pt.y - _this._imgOffset.y) + 'px';
                 }
