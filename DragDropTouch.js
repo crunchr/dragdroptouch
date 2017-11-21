@@ -1,8 +1,3 @@
-// Prevent scrolling during touchMove.
-var scrollKillClass = "kill-scrolling";
-var lockBodyScroll = function lockBodyScroll(body) { body.classList.add(scrollKillClass) };
-var unlockBodyScroll = function unlockBodyScroll(body) { body.classList.remove(scrollKillClass) };
-
 var DragDropTouch;
 (function (DragDropTouch_1) {
     'use strict';
@@ -223,8 +218,6 @@ var DragDropTouch;
                 if (this._dragSource && !this._img) {
                     var delta = this._getDelta(e);
                     if (delta > DragDropTouch._THRESHOLD) {
-                        // Prevent scrolling
-                        lockBodyScroll(document.body);
                         e.preventDefault();
 
                         this._dispatchEvent(e, 'dragstart', this._dragSource);
@@ -234,6 +227,8 @@ var DragDropTouch;
                 }
                 // continue dragging
                 if (this._img) {
+                    // HACK: align ball with finger (find out why a transform is added...)
+                    this._img.style.transform = '';
                     this._lastTouch = e;
 
                     if (target != this._lastTarget) {
@@ -274,8 +269,6 @@ var DragDropTouch;
                     this._reset();
                 }
             }
-            // Enable scrolling again
-            unlockBodyScroll(document.body);
 
             // Show the hint element again (if it was hidden)
             if(!!this.hintElement) {
@@ -283,30 +276,30 @@ var DragDropTouch;
             }
         };
         // ** utilities
-        DragDropTouch.prototype._getCurrentCrunchrApp = () => {
-          const bodyClasses =  document.body.className.split(' ');
-          let currentApp = ''
-          bodyClasses.forEach((cls) => {
-            switch (cls) {
-              case 'organisation':
-                currentApp = 'organisation';
-              case 'workforce':
-                currentApp = 'workforce';
-              case "succession":
-                return "succession";
-              case 'talent':
-                currentApp = 'talent';
-              case 'preference':
-                currentApp = 'preference';
-              case 'next':
-                currentApp = 'next';
-              case 'survey':
-                currentApp = 'survey';
-            };
-          });
-          return currentApp;
+        DragDropTouch.prototype._getCurrentCrunchrApp = function () {
+            const bodyClasses = document.body.className.split(' ');
+            let currentApp = ''
+            bodyClasses.forEach(function (cls) {
+                switch (cls) {
+                    case 'organisation':
+                        currentApp = 'organisation';
+                    case 'workforce':
+                        currentApp = 'workforce';
+                    case "succession":
+                        currentApp = "succession";
+                    case 'talent':
+                        currentApp = 'talent';
+                    case 'preference':
+                        currentApp = 'preference';
+                    case 'next':
+                        currentApp = 'next';
+                    case 'survey':
+                        currentApp = 'survey';
+                };
+            });
+            return currentApp;
         };
-        DragDropTouch.prototype._findHintElement = (src) => {
+        DragDropTouch.prototype._findHintElement = function (src) {
           // Find the node by classname. We traverse, since
           // its location in the DOM might change in future releases,
           // or hints might not be available at all.
@@ -372,7 +365,10 @@ var DragDropTouch;
             // (thus an _extra_ element will be inserted in the DOM tree, at the end of body)
             var src = this._imgCustom || this._dragSource;
             this._img = src.cloneNode(true);
-            this._copyStyle(src, this._img);
+            // Disable copying style in survey.
+            if (DragDropTouch.prototype._getCurrentCrunchrApp() != 'survey') {
+                this._copyStyle(src, this._img);
+            }
             this._img.style.top = this._img.style.left = '-9999px';
             // if creating from drag source, apply offset and opacity
             if (!this._imgCustom) {
@@ -470,7 +466,7 @@ var DragDropTouch;
     DragDropTouch._OPACITY = 0.75; // drag image opacity
     DragDropTouch._DBLCLICK = 350; // max ms between clicks in a double click
     // copy styles/attributes from drag source to drag image element
-    DragDropTouch._rmvAtts = 'id,class,style,draggable'.split(',');
+    DragDropTouch._rmvAtts = 'id,style,draggable'.split(',');
     // synthesize and dispatch an event
     // returns true if the event has been handled (e.preventDefault == true)
     DragDropTouch._kbdProps = 'altKey,ctrlKey,metaKey,shiftKey'.split(',');
