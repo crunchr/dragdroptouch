@@ -277,7 +277,7 @@ var DragDropTouch;
         };
         // ** utilities
         DragDropTouch.prototype._getCurrentCrunchrApp = function () {
-            const bodyClasses = document.body.className.split(' ');
+            var bodyClasses = document.body.className.split(' ');
             let currentApp = ''
             bodyClasses.forEach(function (cls) {
                 switch (cls) {
@@ -303,11 +303,11 @@ var DragDropTouch;
           // Find the node by classname. We traverse, since
           // its location in the DOM might change in future releases,
           // or hints might not be available at all.
-          const children = src.childNodes;
+          var children = src.childNodes;
           let hintElement = undefined;
           // For each child of the dragged sourcenode
           for(let i = 0; i < children.length; i++) {
-              const el = children[i];
+              var el = children[i];
               // If a child has no classlist, skip it
               if(!el.classList) {
                   continue;
