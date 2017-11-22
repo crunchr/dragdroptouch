@@ -278,7 +278,7 @@ var DragDropTouch;
         // ** utilities
         DragDropTouch.prototype._getCurrentCrunchrApp = function () {
             var bodyClasses = document.body.className.split(' ');
-            let currentApp = ''
+            var currentApp = ''
             bodyClasses.forEach(function (cls) {
                 switch (cls) {
                     case 'organisation':
@@ -304,9 +304,9 @@ var DragDropTouch;
           // its location in the DOM might change in future releases,
           // or hints might not be available at all.
           var children = src.childNodes;
-          let hintElement = undefined;
+          var hintElement = undefined;
           // For each child of the dragged sourcenode
-          for(let i = 0; i < children.length; i++) {
+          for(var i = 0; i < children.length; i++) {
               var el = children[i];
               // If a child has no classlist, skip it
               if(!el.classList) {
