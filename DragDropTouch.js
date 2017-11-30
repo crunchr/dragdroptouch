@@ -199,12 +199,12 @@ var DragDropTouch;
                     }
                     // Add nowDragging class to element to indicate dragging is imminent
                     if(!!this._dragSource) {
-                      this._dragSource.classList.add('nowDragging');
+                        this._dragSource.classList.add('nowDragging');
                     }
                     e.preventDefault();
-                    }
                 }
-            };
+            }
+        };
         DragDropTouch.prototype._touchmove = function (e) {
             if (this._shouldHandle(e)) {
                 // see if target wants to handle move
@@ -237,6 +237,20 @@ var DragDropTouch;
                         this._lastTarget = target;
                     }
                     this._moveImage(e);
+                    
+                    if (this._stopScrolling) {
+                        if (e.touches[0].pageY < 100) {
+                            this._stopScrolling = false;
+                            this._initScroll(-3);
+                        } else if (e.touches[0].pageY > window.screen.availHeight - 175) {
+                            this._stopScrolling = false;
+                            this._initScroll(3);
+                        }
+                    } else if (e.touches[0].pageY >= 100 &&
+                               e.touches[0].pageY <= window.screen.availHeight - 175) {
+                        this._stopScrolling = true;
+                    }
+
                     this._dispatchEvent(e, 'dragover', target);
                 }
             }
@@ -247,6 +261,8 @@ var DragDropTouch;
                 if(!!this._dragSource) {
                   this._dragSource.classList.remove('nowDragging');
                 }
+
+                this._stopScrolling = true;
 
                 // see if target wants to handle up
                 if (this._dispatchEvent(this._lastTouch, 'mouseup', e.target)) {
@@ -272,8 +288,8 @@ var DragDropTouch;
 
             // Show the hint element again (if it was hidden)
             if(!!this.hintElement) {
-              this.hintElement.style.display = ''; // default
-            }
+                this.hintElement.style.display = ''; // default
+              }
         };
         // ** utilities
         DragDropTouch.prototype._getCurrentCrunchrApp = function () {
@@ -402,6 +418,24 @@ var DragDropTouch;
                 }
             });
         };
+        DragDropTouch.prototype._scroll = function(val, wrapper) {
+            var _this = this;
+            wrapper.scrollTop(wrapper.scrollTop() + val);
+            if (!this._stopScrolling) {
+                setTimeout(function() {
+                    _this._scroll(val, wrapper);
+                }, 20);
+            }
+        }
+        DragDropTouch.prototype._initScroll = function(val) {
+            var _this = this;
+            var wrapper = $('.wrapper');
+            setTimeout(function() {
+                if (!_this._stopScrolling) {
+                    _this._scroll(val, wrapper);
+                }
+            }, 200);
+        }
         // copy properties from an object to another
         DragDropTouch.prototype._copyProps = function (dst, src, props) {
             for (var i = 0; i < props.length; i++) {
